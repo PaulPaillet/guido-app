@@ -118,13 +118,13 @@ class RecordFragment : Fragment() {
         Log.d("height", height.toString())
 
         var toSub = -1
-        if (note == "Do")  toSub = 0
-        if (note == "Re")  toSub = 10
+        if (note == "Do")  toSub = -4
+        if (note == "Re")  toSub = 8
         if (note == "Mi")  toSub = 20
-        if (note == "Fa")  toSub = 30
-        if (note == "Sol") toSub = 40
-        if (note == "La")  toSub = 50
-        if (note == "Si")  toSub = 60
+        if (note == "Fa")  toSub = 32
+        if (note == "Sol") toSub = 44
+        if (note == "La")  toSub = 57
+        if (note == "Si")  toSub = 69
         toSub += 10
 
         val reste:Int = nbNotes % 13
