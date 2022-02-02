@@ -12,7 +12,6 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 
-
 object ApiClient {
     private const val BASE_URL: String = "http://192.168.26.44:8080"
 

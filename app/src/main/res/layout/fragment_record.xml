@@ -1,75 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detect"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#00FFFFFF"
     tools:context=".fragments.RecordFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/detect"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00FFFFFF">
+    <ImageButton
+        android:id="@+id/buttonMicro"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
 
-        <ImageView
-            android:id="@+id/partition"
-            android:layout_width="match_parent"
-            android:layout_height="664dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="3dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logomicro"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonListen"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            android:src="@drawable/partition"
-            app:layout_constraintBottom_toTopOf="@+id/buttonMicro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ImageContrastCheck" />
+    <ImageButton
+        android:id="@+id/buttonListen"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
 
-        <ImageButton
-            android:id="@+id/buttonMicro"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_below="@id/partition"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="3dp"
-            android:adjustViewBounds="true"
-            android:background="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logomicro"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/buttonListen"
-            app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="3dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logoplay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonMicro" />
 
-        <ImageButton
-            android:id="@+id/buttonListen"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_below="@id/partition"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="3dp"
-            android:adjustViewBounds="true"
-            android:background="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logoplay"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/buttonMicro" />
+    <ImageButton
+        android:id="@+id/buttonRecording"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
 
-        <ImageButton
-            android:id="@+id/buttonRecording"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_below="@id/partition"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="3dp"
-            android:adjustViewBounds="true"
-            android:background="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logorecording"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="3dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logorecording"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

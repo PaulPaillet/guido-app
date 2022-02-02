@@ -39,10 +39,11 @@ class RecordFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var nbNotes: Int = 0
-    private var startX: Int = 170
-    private var startY: Int = 155
-    private var width: Int = 0
-    private var height: Int = 0
+    private var startx: Int = 170
+    private var starty: Int = 155
+    private var yPositions: IntArray = intArrayOf(220, 470, 720, 982, 1228, 1480)
+    private lateinit var constraintLayout: ConstraintLayout
+    private lateinit var root: View
 
     private var mediaRecorder: MediaRecorder? = null
     private lateinit var mediaPlayer: MediaPlayer
@@ -66,7 +67,9 @@ class RecordFragment : Fragment() {
     }
 
     private fun startRecording() {
-        audioRecordFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).absolutePath + "/audioRecord.3gp"
+        //audioRecordFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).absolutePath + "/audioRecord.3gp"
+        // Storing audio file in application storage space
+        audioRecordFile = activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString()
 
         mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -79,6 +82,7 @@ class RecordFragment : Fragment() {
                 Log.d(DEBUG_RECORDING_AUDIO, "MediaRecorder prepare() ok")
             } catch (e: IOException) {
                 Log.d(DEBUG_RECORDING_AUDIO, "MediaRecorder prepare() failed")
+                Log.d(DEBUG_RECORDING_AUDIO, e.toString())
                 return
             }
         }
@@ -110,36 +114,54 @@ class RecordFragment : Fragment() {
         activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         var width = displayMetrics.widthPixels
         var height = displayMetrics.heightPixels
-        Log.d("width",width.toString())
-        Log.d("height",height.toString())
+        Log.d("width", width.toString())
+        Log.d("height", height.toString())
+
         var toSub = -1
-        if(note == "Do") toSub = 0
-        if(note == "Re") toSub = 10
-        if(note == "Mi") toSub = 20
-        if(note == "Fa") toSub = 30
-        if(note == "Sol") toSub = 40
-        if(note == "La") toSub = 50
-        if(note == "Si") toSub = 60
-        val reste:Int = nbNotes%13
-        val div:Int = nbNotes/13
-        var toAdd:Int = 0
-        if (div>2) toAdd = 20
-        return Pair(startX + (width/18 * reste),startY + (height/9 * div) + toAdd + 7*div - toSub)
+        if (note == "Do")  toSub = 0
+        if (note == "Re")  toSub = 10
+        if (note == "Mi")  toSub = 20
+        if (note == "Fa")  toSub = 30
+        if (note == "Sol") toSub = 40
+        if (note == "La")  toSub = 50
+        if (note == "Si")  toSub = 60
+        toSub += 10
+
+        val reste:Int = nbNotes % 13
+
+        val div:Int = nbNotes / 13
+        if (div == 3) toSub += 3
+        if (div > 3) toSub -= 2
+
+        Log.d("div", div.toString())
+        Log.d("test", yPositions[0].toString())
+
+        return Pair(startx + (width / adjustImageViewToScreen(18) * reste), yPositions[div] - toSub)
     }
 
     fun ajoutNote(layout: ConstraintLayout, note: String){
-        if(nbNotes<78) {
+        if (nbNotes < 78) {
             val imageView = ImageView(activity)
             imageView.setImageResource(R.drawable.blanchecrochetqueue)
-            imageView.layoutParams = ConstraintLayout.LayoutParams(65, 65)
+            imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(65), adjustImageViewToScreen(65))
             val (x, y) = calculatePos(note)
-            Log.d("y : ",y.toString())
-            imageView.x = x.toFloat()
-            imageView.y = y.toFloat()
+            Log.d("y : ", y.toString())
+            imageView.x = adjustImageViewToScreen(x).toFloat()
+            imageView.y = adjustImageViewToScreen(y).toFloat()
             imageView.bringToFront()
             layout.addView(imageView)
             nbNotes++
         }
+    }
+
+    fun adjustImageViewToScreen(toAdjust: Int): Int {
+        val pxOriginX: Int = 1080
+
+        val displayMetrics = DisplayMetrics()
+        activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        val pxActualX: Int = displayMetrics.widthPixels
+
+        return toAdjust * pxActualX / pxOriginX
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -147,16 +169,15 @@ class RecordFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        root = inflater.inflate(R.layout.fragment_record, container, false)
+        constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
 
-        val displayMetrics = DisplayMetrics()
-        activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-        width = displayMetrics.widthPixels
-        height = displayMetrics.heightPixels
-        Log.d("width",width.toString())
-        Log.d("height",height.toString())
-
-        val root = inflater.inflate(R.layout.fragment_record, container, false)
-        val layout = root.findViewById<ConstraintLayout>(R.id.detect)
+        val partition = ImageView(activity)
+        partition.setImageResource(R.drawable.partition)
+        partition.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(2 * 607), adjustImageViewToScreen(2 * 734))
+        partition.x = adjustImageViewToScreen(0).toFloat()
+        partition.y = adjustImageViewToScreen(100).toFloat()
+        constraintLayout.addView(partition)
 
         buttonMicro = root.findViewById<ImageButton>(R.id.buttonMicro)
         buttonMicro.setOnClickListener {
@@ -170,7 +191,14 @@ class RecordFragment : Fragment() {
             val uri = Uri.fromFile(file)
             mediaPlayer = MediaPlayer.create(context, uri)
             mediaPlayer.start()
-            ajoutNote(layout, "Do")
+            //ajoutNote(layout, "Do")
+            ajoutNote(constraintLayout, "Do")            
+            ajoutNote(constraintLayout, "Re")
+            ajoutNote(constraintLayout, "Mi")
+            ajoutNote(constraintLayout, "Fa")
+            ajoutNote(constraintLayout, "Sol")
+            ajoutNote(constraintLayout, "La")
+            ajoutNote(constraintLayout, "Si")
         }
 
         buttonRecording = root.findViewById<ImageButton>(R.id.buttonRecording)

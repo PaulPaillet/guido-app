@@ -60,10 +60,6 @@ class MainActivity : AppCompatActivity() {
             executeCall();
         }
 
-
-        //val intent : Intent =  Intent(this,DetectionActivity::class.java)
-        //startActivity(intent)
-
         // Verify and request permissions to record audio and to write data in storage
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,

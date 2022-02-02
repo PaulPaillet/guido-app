@@ -1,7 +1,5 @@
 package com.example.guido
 
-import java.lang.reflect.Array
-
 object Constants{
 
     const val USER_NAME: String = "user name"
@@ -11,13 +9,13 @@ object Constants{
         val questionsList = ArrayList<Question>()
 
         val que1 = Question(1,
-                        "Quelle est cette note ?",
-                                R.drawable.ic_do,
-                       "Do",
-                       "Re",
-                      "Mi",
-                       "Fa",
-                       1)
+            "Quelle est cette note ?",
+            R.drawable.ic_do,
+            "Do",
+            "Re",
+            "Mi",
+            "Fa",
+            1)
 
         val que2 = Question(2,
             "Quelle est cette note ?",
@@ -52,6 +50,5 @@ object Constants{
         questionsList.add(que4)
 
         return questionsList
-
     }
 }
