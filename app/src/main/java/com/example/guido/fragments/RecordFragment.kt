@@ -5,6 +5,7 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Debug
 import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
@@ -57,6 +58,7 @@ class RecordFragment : Fragment() {
     private lateinit var audioRecordFile: String
     private lateinit var seekBar: SeekBar
     private lateinit var textView: TextView
+    private var tempo: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,7 +132,7 @@ class RecordFragment : Fragment() {
         if (note == "Sol") toSub = 44
         if (note == "La")  toSub = 57
         if (note == "Si")  toSub = 69
-        toSub += 10
+        toSub += 34
 
         val reste:Int = nbNotes % 13
 
@@ -144,11 +146,13 @@ class RecordFragment : Fragment() {
         return Pair(startx + (width / adjustImageViewToScreen(18) * reste), yPositions[div] - toSub)
     }
 
-    fun ajoutNote(layout: ConstraintLayout, note: String){
+    fun ajoutNote(layout: ConstraintLayout, note: String,couleur:String){
         if (nbNotes < 78) {
             val imageView = ImageView(activity)
-            imageView.setImageResource(R.drawable.blanchecrochetqueue)
-            imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(65), adjustImageViewToScreen(65))
+            if(couleur == "blanche") imageView.setImageResource(R.drawable.blanche)
+            if(couleur == "noire") imageView.setImageResource(R.drawable.noire)
+            if(couleur == "ronde") imageView.setImageResource(R.drawable.ronde)
+            imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(100), adjustImageViewToScreen(100))
             val (x, y) = calculatePos(note)
             Log.d("y : ", y.toString())
             imageView.x = adjustImageViewToScreen(x).toFloat()
@@ -169,18 +173,33 @@ class RecordFragment : Fragment() {
         return toAdjust * pxActualX / pxOriginX
     }
 
-    fun setUpSeekBar(){
+    private fun setUpSeekBar(){
         seekBar = root.findViewById<SeekBar>(R.id.seekBar)
         textView = root.findViewById<TextView>(R.id.textView)
         textView.text ="0 BPM"
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 textView.text = progress.toString() + " BPM"
+                tempo = progress
+                couleurNote(2)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
+    }
+
+    private fun couleurNote(sec: Int)/*: String*/{
+        var bpm = 60/tempo
+        var duree = (sec*bpm).toInt()
+        when(duree){
+            in 0..1 -> Log.d("duree",duree.toString())
+            in 1..2 -> Log.d("duree",duree.toString())
+            in 2..4 -> Log.d("duree",duree.toString())
+            else -> {
+                Log.d("duree",duree.toString())
+            }
+        }
     }
 
 
@@ -212,14 +231,9 @@ class RecordFragment : Fragment() {
             val uri = Uri.fromFile(file)
             mediaPlayer = MediaPlayer.create(context, uri)
             mediaPlayer.start()
-            //ajoutNote(layout, "Do")
-            ajoutNote(constraintLayout, "Do")            
-            ajoutNote(constraintLayout, "Re")
-            ajoutNote(constraintLayout, "Mi")
-            ajoutNote(constraintLayout, "Fa")
-            ajoutNote(constraintLayout, "Sol")
-            ajoutNote(constraintLayout, "La")
-            ajoutNote(constraintLayout, "Si")
+            ajoutNote(constraintLayout, "Do","blanche")
+            ajoutNote(constraintLayout, "Do","noire")
+            ajoutNote(constraintLayout, "Do","ronde")
         }
 
         buttonRecording = root.findViewById<ImageButton>(R.id.buttonRecording)
