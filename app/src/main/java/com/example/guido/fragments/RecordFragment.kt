@@ -5,8 +5,6 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Debug
-import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
