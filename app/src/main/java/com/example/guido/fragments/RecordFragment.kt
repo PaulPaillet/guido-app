@@ -12,14 +12,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.guido.R
 import java.io.File
 import java.io.IOException
+import com.example.guido.MainActivity
+
+
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,6 +55,8 @@ class RecordFragment : Fragment() {
     private lateinit var buttonListen: ImageButton
     private lateinit var buttonRecording: ImageButton
     private lateinit var audioRecordFile: String
+    private lateinit var seekBar: SeekBar
+    private lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -164,6 +169,21 @@ class RecordFragment : Fragment() {
         return toAdjust * pxActualX / pxOriginX
     }
 
+    fun setUpSeekBar(){
+        seekBar = root.findViewById<SeekBar>(R.id.seekBar)
+        textView = root.findViewById<TextView>(R.id.textView)
+        textView.text ="0 BPM"
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                textView.text = progress.toString() + " BPM"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -171,6 +191,7 @@ class RecordFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_record, container, false)
         constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
+        setUpSeekBar()
 
         val partition = ImageView(activity)
         partition.setImageResource(R.drawable.partition)
