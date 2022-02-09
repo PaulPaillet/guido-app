@@ -30,15 +30,12 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
 
         setQuestion()
 
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        val tv_progress = findViewById<TextView>(R.id.tv_progress)
-        val tv_question = findViewById<TextView>(R.id.tv_question)
-        val iv_image = findViewById<ImageView>(R.id.iv_image)
         val tv_option_one = findViewById<TextView>(R.id.tv_option_one)
         val tv_option_two = findViewById<TextView>(R.id.tv_option_two)
         val tv_option_three = findViewById<TextView>(R.id.tv_option_three)
         val tv_option_four = findViewById<TextView>(R.id.tv_option_four)
         val btn_submit = findViewById<Button>(R.id.btn_submit)
+        btn_submit.visibility = View.GONE
 
         tv_option_one.setOnClickListener(this)
         tv_option_two.setOnClickListener(this)
@@ -55,7 +52,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         defaultOptionsView()
 
         if(mCurrentPosition == mQuestionsList!!.size){
-            btn_submit.text = "TERMINER"
+            btn_submit.text = "TERMINER LE TEST"
         }else{
             btn_submit.text = "ENVOYER"
         }
@@ -76,6 +73,11 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         tv_option_two.text = question.optionTwo
         tv_option_three.text = question.optionThree
         tv_option_four.text = question.optionFour
+        btn_submit.visibility = View.GONE
+        tv_option_one.isClickable = true
+        tv_option_two.isClickable = true
+        tv_option_three.isClickable = true
+        tv_option_four.isClickable = true
     }
 
     private fun defaultOptionsView(){
@@ -107,15 +109,19 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         when(v?.id){
             R.id.tv_option_one ->{
                 selectedOptionView(tv_option_one,1)
+                btn_submit.visibility = View.VISIBLE
             }
             R.id.tv_option_two ->{
                 selectedOptionView(tv_option_two,2)
+                btn_submit.visibility = View.VISIBLE
             }
             R.id.tv_option_three ->{
                 selectedOptionView(tv_option_three,3)
+                btn_submit.visibility = View.VISIBLE
             }
             R.id.tv_option_four ->{
                 selectedOptionView(tv_option_four,4)
+                btn_submit.visibility = View.VISIBLE
             }
             R.id.btn_submit ->{
                 if(mSelectedOptionPosition == 0){
@@ -146,6 +152,10 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
                     }else{
                         btn_submit.text = "QUESTION SUIVANTE"
                     }
+                    tv_option_one.isClickable = false
+                    tv_option_two.isClickable = false
+                    tv_option_three.isClickable = false
+                    tv_option_four.isClickable = false
                     mSelectedOptionPosition = 0
                 }
             }
