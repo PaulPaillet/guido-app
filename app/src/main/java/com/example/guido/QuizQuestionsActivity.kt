@@ -1,16 +1,14 @@
 package com.example.guido
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
 
@@ -35,7 +33,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         val tv_option_three = findViewById<TextView>(R.id.tv_option_three)
         val tv_option_four = findViewById<TextView>(R.id.tv_option_four)
         val btn_submit = findViewById<Button>(R.id.btn_submit)
-        btn_submit.visibility = View.GONE
+        btn_submit.visibility = View.INVISIBLE
 
         tv_option_one.setOnClickListener(this)
         tv_option_two.setOnClickListener(this)
@@ -44,16 +42,16 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         btn_submit.setOnClickListener(this)
     }
 
-    private fun setQuestion(){
+    private fun setQuestion() {
 
         val btn_submit = findViewById<Button>(R.id.btn_submit)
         val question = mQuestionsList!!.get(mCurrentPosition - 1)
 
         defaultOptionsView()
 
-        if(mCurrentPosition == mQuestionsList!!.size){
+        if (mCurrentPosition == mQuestionsList!!.size) {
             btn_submit.text = "TERMINER LE TEST"
-        }else{
+        } else {
             btn_submit.text = "ENVOYER"
         }
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -73,15 +71,14 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         tv_option_two.text = question.optionTwo
         tv_option_three.text = question.optionThree
         tv_option_four.text = question.optionFour
-        btn_submit.visibility = View.GONE
+        btn_submit.visibility = View.INVISIBLE
         tv_option_one.isClickable = true
         tv_option_two.isClickable = true
         tv_option_three.isClickable = true
         tv_option_four.isClickable = true
     }
 
-    private fun defaultOptionsView(){
-
+    private fun defaultOptionsView() {
         val tv_option_one = findViewById<TextView>(R.id.tv_option_one)
         val tv_option_two = findViewById<TextView>(R.id.tv_option_two)
         val tv_option_three = findViewById<TextView>(R.id.tv_option_three)
@@ -92,7 +89,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
         options.add(2, tv_option_three)
         options.add(3, tv_option_four)
 
-        for(option in options){
+        for (option in options) {
             option.setTextColor(Color.parseColor("#7A8089"))
             option.typeface = Typeface.DEFAULT
             option.background = ContextCompat.getDrawable(this,R.drawable.default_option_border_bg)
@@ -100,7 +97,6 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     override fun onClick(v: View?) {
-
         val tv_option_one = findViewById<TextView>(R.id.tv_option_one)
         val tv_option_two = findViewById<TextView>(R.id.tv_option_two)
         val tv_option_three = findViewById<TextView>(R.id.tv_option_three)
