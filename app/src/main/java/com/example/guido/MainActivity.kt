@@ -23,15 +23,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 import CallApi
 
+
 private const val REQUEST_PERMISSIONS_CODE = 200
 
 class MainActivity : AppCompatActivity() {
-
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://localhost:8080")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val service = retrofit.create(CallApi::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
