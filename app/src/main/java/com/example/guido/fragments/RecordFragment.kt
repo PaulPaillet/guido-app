@@ -5,27 +5,20 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.guido.R
 import java.io.File
 import java.io.IOException
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
 
@@ -35,9 +28,7 @@ private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
  * create an instance of this fragment.
  */
 class RecordFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
     private var nbNotes: Int = 0
     private var startx: Int = 170
     private var starty: Int = 155
@@ -52,14 +43,8 @@ class RecordFragment : Fragment() {
     private lateinit var buttonListen: ImageButton
     private lateinit var buttonRecording: ImageButton
     private lateinit var audioRecordFile: String
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var seekBar: SeekBar
+    private lateinit var textView: TextView
 
     override fun onDestroy() {
         super.onDestroy()
@@ -164,6 +149,20 @@ class RecordFragment : Fragment() {
         return toAdjust * pxActualX / pxOriginX
     }
 
+    fun setUpSeekBar(){
+        seekBar = root.findViewById<SeekBar>(R.id.seekBar)
+        textView = root.findViewById<TextView>(R.id.textView)
+        textView.text ="0 BPM"
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                textView.text = progress.toString() + " BPM"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -171,6 +170,7 @@ class RecordFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_record, container, false)
         constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
+        setUpSeekBar()
 
         val partition = ImageView(activity)
         partition.setImageResource(R.drawable.partition)
@@ -191,7 +191,7 @@ class RecordFragment : Fragment() {
             val uri = Uri.fromFile(file)
             mediaPlayer = MediaPlayer.create(context, uri)
             mediaPlayer.start()
-            //ajoutNote(layout, "Do")
+
             ajoutNote(constraintLayout, "Do")            
             ajoutNote(constraintLayout, "Re")
             ajoutNote(constraintLayout, "Mi")
@@ -214,20 +214,13 @@ class RecordFragment : Fragment() {
     companion object {
         /**
          * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
+         * this fragment.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment RecordFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             RecordFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
             }
     }
 }
