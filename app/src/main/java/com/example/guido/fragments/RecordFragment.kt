@@ -63,7 +63,7 @@ class RecordFragment : Fragment() {
         nbNotes = 0
     }
 
-    fun makecomplexCall(){
+    private fun makecomplexCall(){
         var body : Body = Body()
         body.value=values
         body.sampleRate = 48000
@@ -132,6 +132,11 @@ class RecordFragment : Fragment() {
         buttonRecording.visibility = View.GONE
         buttonMicro.visibility = View.VISIBLE
         buttonListen.visibility = View.VISIBLE
+
+        var stor = File(activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString())
+        file = stor.inputStream()
+        values = file.readBytes();
+        Log.d("lenght", values.size.toString())
     }
 
     fun calculatePos(note: String): Pair<Int,Int> {
@@ -223,15 +228,6 @@ class RecordFragment : Fragment() {
                 Log.d("duree",duree.toString())
             }
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        var stor = File(activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString())
-        file = stor.inputStream()
-        values = file.readBytes();
-        Log.d("lenght", values.size.toString())
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

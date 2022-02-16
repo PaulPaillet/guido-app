@@ -39,7 +39,7 @@ class SettingsFragment : Fragment() {
         Log.d("lenght", values.size.toString())
     }
 
-    fun makecomplexCall(){
+    private fun makecomplexCall(){
         var body : Body = Body()
         body.value=values
         body.sampleRate = 48000
