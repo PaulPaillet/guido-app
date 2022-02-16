@@ -37,7 +37,7 @@ private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
  * create an instance of this fragment.
  */
 class RecordFragment : Fragment() {
-
+    private var check: Boolean = false
     private var nbNotes: Int = 0
     private var startx: Int = 170
     private var starty: Int = 155
@@ -58,7 +58,8 @@ class RecordFragment : Fragment() {
 
     lateinit var file : InputStream
     lateinit var values : ByteArray
-    lateinit var parts: List<String>
+    lateinit var parts: MutableList<String>
+    lateinit var durees: MutableList<Float>
 
     override fun onDestroy() {
         super.onDestroy()
@@ -76,7 +77,7 @@ class RecordFragment : Fragment() {
                     val response : Response<Note> = ApiClient.apiService.getNote(body);
                     if (response.isSuccessful && response.body() != null) {
                         val content = response.body()
-                        show(content.toString())
+                        resManagement(content.toString())
 //do something
                     } else {
                         Log.d("error",response.body().toString())
@@ -88,11 +89,25 @@ class RecordFragment : Fragment() {
         }
     }
 
-    private fun show(result: String) {
+    private fun resManagement(result: String) {
+        check = true
         var clean = result.replace("Note(note=","")
         clean = clean.replace(")","")
-        parts = clean.split(" ")
-        Log.d("result : ",parts.toString())
+        val temp = clean.split(" ") as MutableList<String>
+        temp.removeAt(temp.size-1)
+        val n = temp.size
+        durees = mutableListOf()
+        var cpt=0
+        Log.d("temp  ",temp.toString())
+        for(i in (n+1)/2 until n) {
+            Log.d("i ",i.toString())
+            durees.add(temp[i].toFloat())
+            cpt++
+        }
+        parts = temp.subList(0, (n + 1) / 2)
+        Log.d("result  ",parts.toString())
+        Log.d("durees " ,durees.toString())
+        check = false
     }
 
     private fun startRecording() {
@@ -214,7 +229,6 @@ class RecordFragment : Fragment() {
                 if(progress==0) tempo = progress + 1
                 else tempo = progress
                 textView.text = tempo.toString() + " BPM"
-                couleurNote(2)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -222,15 +236,15 @@ class RecordFragment : Fragment() {
         })
     }
 
-    private fun couleurNote(sec: Int)/*: String*/{
+    private fun couleurNote(sec: Float): String{
         var bpm = 60/tempo
         var duree = (sec*bpm).toInt()
         when(duree){
-            in 0..1 -> Log.d("duree",duree.toString())
-            in 1..2 -> Log.d("duree",duree.toString())
-            in 2..4 -> Log.d("duree",duree.toString())
+            in 0..1 -> return "noire"
+            in 1..2 -> return "blanche"
+            in 2..4 -> return "ronde"
             else -> {
-                Log.d("duree",duree.toString())
+                return "ronde"
             }
         }
     }
@@ -243,7 +257,8 @@ class RecordFragment : Fragment() {
         root = inflater.inflate(R.layout.fragment_record, container, false)
         constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
         setUpSeekBar()
-        parts = emptyList()
+        parts = mutableListOf()
+        durees = mutableListOf()
 
         val partition = ImageView(activity)
         partition.setImageResource(R.drawable.partition)
@@ -271,11 +286,11 @@ class RecordFragment : Fragment() {
         buttonRecording.setOnClickListener {
             stopRecording();
             makecomplexCall();
-            Thread.sleep(3_000)
+            Thread.sleep(4_000)
             Log.d("parts ",parts.toString())
-            parts.forEach{
-                Log.d("note", it)
-                ajoutNote(it.toLowerCase(),"blanche")
+            for (i in 0 until parts.size){
+                Log.d("note", parts[i])
+                ajoutNote(parts[i],couleurNote(durees[i]))
             }
         }
 
