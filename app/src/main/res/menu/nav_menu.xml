@@ -12,11 +12,6 @@
         android:title="Quiz"/>
 
     <item
-        android:id="@+id/ic_volume"
-        android:icon="@drawable/ic_volume"
-        android:title="Listen"/>
-
-    <item
         android:id="@+id/ic_settings"
         android:icon="@drawable/ic_settings"
         android:title="Settings"/>

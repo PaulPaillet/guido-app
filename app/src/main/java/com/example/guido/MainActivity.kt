@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.example.guido.fragments.QuestionAnswerFragment
 import com.example.guido.fragments.RecordFragment
 import com.example.guido.fragments.SettingsFragment
-import com.example.guido.fragments.VolumeFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -36,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         val questionAnswerFragment = QuestionAnswerFragment()
         val recordFragment = RecordFragment()
         val settingsFragment = SettingsFragment()
-        val volumeFragment = VolumeFragment()
 
         makeCurrentFragment(recordFragment)
         val bottomNavigation = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_navigation)
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId){
                 R.id.ic_question_answer -> makeCurrentFragment(questionAnswerFragment)
                 R.id.ic_record -> makeCurrentFragment(recordFragment)
-                R.id.ic_volume -> makeCurrentFragment(volumeFragment)
                 R.id.ic_settings -> makeCurrentFragment(settingsFragment)
             }
             true

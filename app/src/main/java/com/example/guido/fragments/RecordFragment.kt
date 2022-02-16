@@ -156,10 +156,15 @@ class RecordFragment : Fragment() {
         seekBar = root.findViewById<SeekBar>(R.id.seekBar)
         textView = root.findViewById<TextView>(R.id.textView)
         textView.text ="0 BPM"
+        seekBar.max = 60
+        seekBar.progress = 30
+        tempo = 30
+        textView.text = "30 BPM"
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                textView.text = progress.toString() + " BPM"
-                tempo = progress
+                if(progress==0) tempo = progress + 1
+                else tempo = progress
+                textView.text = tempo.toString() + " BPM"
                 couleurNote(2)
             }
 
