@@ -154,11 +154,11 @@ class RecordFragment : Fragment() {
         var toSub = -1
         if (note == "do")  toSub = -4
         else if (note == "ré")  toSub = 8
-        else if (note == "mi")  toSub = 20
-        else if (note == "fa")  toSub = 32
-        else if (note == "sol") toSub = 44
+        else if (note == "mi" || note == "me")  toSub = 20
+        else if (note == "fa" || note == "ça")  toSub = 32
+        else if (note == "sol" || note == "seule") toSub = 44
         else if (note == "la")  toSub = 57
-        else if (note == "si")  toSub = 69
+        else if (note == "si" || note == "6")  toSub = 69
         else return Pair(-1,-1)
         toSub += 34
 
@@ -272,9 +272,10 @@ class RecordFragment : Fragment() {
             stopRecording();
             makecomplexCall();
             Thread.sleep(3_000)
+            Log.d("parts ",parts.toString())
             parts.forEach{
                 Log.d("note", it)
-                ajoutNote(it,"blanche")
+                ajoutNote(it.toLowerCase(),"blanche")
             }
         }
 
