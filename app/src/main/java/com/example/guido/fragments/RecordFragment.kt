@@ -87,8 +87,10 @@ class RecordFragment : Fragment() {
     }
 
     private fun show(result: String) {
-        Log.d("result : ",result)
-        val parts = result.split(" ")
+        var clean = result.replace("Note(note=","")
+        clean = clean.replace(")","")
+        val parts = clean.split(" ")
+        Log.d("result : ",parts.toString())
         parts.forEach{
             Log.d("note : ",it)
             ajoutNote(constraintLayout,it,"blanche")
