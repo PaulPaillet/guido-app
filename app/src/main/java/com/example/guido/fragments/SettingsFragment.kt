@@ -1,6 +1,5 @@
 package com.example.guido.fragments
 
-import CallApi
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,8 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.io.InputStream
 
 
@@ -34,9 +32,10 @@ class SettingsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        file = resources.openRawResource(R.raw.do1)
+        var stor = File(activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString())
+        file = stor.inputStream()
         values = file.readBytes();
-        Log.d("lenght",values.size.toString())
+        Log.d("lenght", values.size.toString())
     }
 
     fun makecomplexCall(){
