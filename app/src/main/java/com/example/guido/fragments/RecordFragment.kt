@@ -72,7 +72,6 @@ class RecordFragment : Fragment() {
             GlobalScope.launch {
                 try {
                     val response : Response<Note> = ApiClient.apiService.getNote(body);
-                    Log.d("alo",response.body().toString())
                     if (response.isSuccessful && response.body() != null) {
                         val content = response.body()
                         show(content.toString())
@@ -89,6 +88,11 @@ class RecordFragment : Fragment() {
 
     private fun show(result: String) {
         Log.d("result : ",result)
+        val parts = result.split(" ")
+        parts.forEach{
+            Log.d("note : ",it)
+            ajoutNote(constraintLayout,it,"blanche")
+        }
     }
 
     private fun startRecording() {
@@ -148,13 +152,14 @@ class RecordFragment : Fragment() {
         Log.d("height", height.toString())
 
         var toSub = -1
-        if (note == "Do")  toSub = -4
-        if (note == "Re")  toSub = 8
-        if (note == "Mi")  toSub = 20
-        if (note == "Fa")  toSub = 32
-        if (note == "Sol") toSub = 44
-        if (note == "La")  toSub = 57
-        if (note == "Si")  toSub = 69
+        if (note == "do")  toSub = -4
+        else if (note == "ré")  toSub = 8
+        else if (note == "mi")  toSub = 20
+        else if (note == "fa")  toSub = 32
+        else if (note == "sol") toSub = 44
+        else if (note == "la")  toSub = 57
+        else if (note == "si")  toSub = 69
+        else return Pair(-1,-1)
         toSub += 34
 
         val reste:Int = nbNotes % 13
@@ -258,9 +263,6 @@ class RecordFragment : Fragment() {
             val uri = Uri.fromFile(file)
             mediaPlayer = MediaPlayer.create(context, uri)
             mediaPlayer.start()
-            ajoutNote(constraintLayout, "Do","blanche")
-            ajoutNote(constraintLayout, "Do","noire")
-            ajoutNote(constraintLayout, "Do","ronde")
         }
 
         buttonRecording = root.findViewById<ImageButton>(R.id.buttonRecording)
