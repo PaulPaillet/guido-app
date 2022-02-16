@@ -26,6 +26,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.sql.Time
 
 
 private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
@@ -57,6 +58,7 @@ class RecordFragment : Fragment() {
 
     lateinit var file : InputStream
     lateinit var values : ByteArray
+    lateinit var parts: List<String>
 
     override fun onDestroy() {
         super.onDestroy()
@@ -89,12 +91,8 @@ class RecordFragment : Fragment() {
     private fun show(result: String) {
         var clean = result.replace("Note(note=","")
         clean = clean.replace(")","")
-        val parts = clean.split(" ")
+        parts = clean.split(" ")
         Log.d("result : ",parts.toString())
-        parts.forEach{
-            Log.d("note : ",it)
-            ajoutNote(constraintLayout,it,"blanche")
-        }
     }
 
     private fun startRecording() {
@@ -149,9 +147,9 @@ class RecordFragment : Fragment() {
         val displayMetrics = DisplayMetrics()
         activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         var width = displayMetrics.widthPixels
-        var height = displayMetrics.heightPixels
-        Log.d("width", width.toString())
-        Log.d("height", height.toString())
+        //var height = displayMetrics.heightPixels
+        //Log.d("width", width.toString())
+        //Log.d("height", height.toString())
 
         var toSub = -1
         if (note == "do")  toSub = -4
@@ -170,13 +168,10 @@ class RecordFragment : Fragment() {
         if (div == 3) toSub += 3
         if (div > 3) toSub -= 2
 
-        Log.d("div", div.toString())
-        Log.d("test", yPositions[0].toString())
-
         return Pair(startx + (width / adjustImageViewToScreen(18) * reste), yPositions[div] - toSub)
     }
 
-    fun ajoutNote(layout: ConstraintLayout, note: String,couleur:String){
+    fun ajoutNote(note: String, couleur:String){
         if (nbNotes < 78) {
             val imageView = ImageView(activity)
             if(couleur == "blanche") imageView.setImageResource(R.drawable.blanche)
@@ -184,11 +179,14 @@ class RecordFragment : Fragment() {
             if(couleur == "ronde") imageView.setImageResource(R.drawable.ronde)
             imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(100), adjustImageViewToScreen(100))
             val (x, y) = calculatePos(note)
-            Log.d("y : ", y.toString())
+            if (x == -1) return
+
+            //Log.d("y", y.toString())
+            //Log.d("x", x.toString())
             imageView.x = adjustImageViewToScreen(x).toFloat()
             imageView.y = adjustImageViewToScreen(y).toFloat()
             imageView.bringToFront()
-            layout.addView(imageView)
+            constraintLayout.addView(imageView)
             nbNotes++
         }
     }
@@ -245,6 +243,7 @@ class RecordFragment : Fragment() {
         root = inflater.inflate(R.layout.fragment_record, container, false)
         constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
         setUpSeekBar()
+        parts = emptyList()
 
         val partition = ImageView(activity)
         partition.setImageResource(R.drawable.partition)
@@ -272,6 +271,11 @@ class RecordFragment : Fragment() {
         buttonRecording.setOnClickListener {
             stopRecording();
             makecomplexCall();
+            Thread.sleep(3_000)
+            parts.forEach{
+                Log.d("note", it)
+                ajoutNote(it,"blanche")
+            }
         }
 
         // Inflate the layout for this fragment
