@@ -16,8 +16,16 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.guido.R
+import com.example.guido.models.Body
+import com.example.guido.models.Note
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 
 
 private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
@@ -47,9 +55,40 @@ class RecordFragment : Fragment() {
     private lateinit var textView: TextView
     private var tempo: Int = 0
 
+    lateinit var file : InputStream
+    lateinit var values : ByteArray
+
     override fun onDestroy() {
         super.onDestroy()
         nbNotes = 0
+    }
+
+    fun makecomplexCall(){
+        var body : Body = Body()
+        body.value=values
+        body.sampleRate = 48000
+        body.sampleWidth = 4
+        CoroutineScope(Dispatchers.IO).launch {
+            GlobalScope.launch {
+                try {
+                    val response : Response<Note> = ApiClient.apiService.getNote(body);
+                    Log.d("alo",response.body().toString())
+                    if (response.isSuccessful && response.body() != null) {
+                        val content = response.body()
+                        show(content.toString())
+//do something
+                    } else {
+                        Log.d("error",response.body().toString())
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private fun show(result: String) {
+        Log.d("result : ",result)
     }
 
     private fun startRecording() {
@@ -186,6 +225,14 @@ class RecordFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        var stor = File(activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString())
+        file = stor.inputStream()
+        values = file.readBytes();
+        Log.d("lenght", values.size.toString())
+    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(
@@ -224,6 +271,7 @@ class RecordFragment : Fragment() {
         buttonRecording.visibility = View.GONE
         buttonRecording.setOnClickListener {
             stopRecording();
+            makecomplexCall();
         }
 
         // Inflate the layout for this fragment

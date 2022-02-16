@@ -29,6 +29,7 @@ class SettingsFragment : Fragment() {
     lateinit var file : InputStream
     lateinit var values : ByteArray
     private lateinit var button: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
