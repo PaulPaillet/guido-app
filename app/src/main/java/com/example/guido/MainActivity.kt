@@ -10,28 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.guido.fragments.HomeFragment
 import com.example.guido.fragments.QuestionAnswerFragment
 import com.example.guido.fragments.RecordFragment
-import com.example.guido.fragments.SettingsFragment
-import com.example.guido.fragments.VolumeFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-import CallApi
 
 private const val REQUEST_PERMISSIONS_CODE = 200
 
 class MainActivity : AppCompatActivity() {
-
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://localhost:8080")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val service = retrofit.create(CallApi::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,17 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         val questionAnswerFragment = QuestionAnswerFragment()
         val recordFragment = RecordFragment()
-        val settingsFragment = SettingsFragment()
-        val volumeFragment = VolumeFragment()
+        val homeFragment = HomeFragment()
 
-        makeCurrentFragment(recordFragment)
+        makeCurrentFragment(homeFragment)
         val bottomNavigation = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId){
                 R.id.ic_question_answer -> makeCurrentFragment(questionAnswerFragment)
                 R.id.ic_record -> makeCurrentFragment(recordFragment)
-                R.id.ic_volume -> makeCurrentFragment(volumeFragment)
-                R.id.ic_settings -> makeCurrentFragment(settingsFragment)
+                R.id.ic_home -> makeCurrentFragment(homeFragment)
             }
             true
         }

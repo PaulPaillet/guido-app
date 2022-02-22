@@ -8,6 +8,22 @@
     android:background="#00FFFFFF"
     tools:context=".fragments.RecordFragment">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/seekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonRecording"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="80dp"/>
+
     <ImageButton
         android:id="@+id/buttonMicro"
         android:layout_width="60dp"

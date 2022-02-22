@@ -5,27 +5,29 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.guido.R
+import com.example.guido.models.Body
+import com.example.guido.models.Note
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
+import java.sql.Time
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
 
@@ -35,9 +37,7 @@ private const val DEBUG_RECORDING_AUDIO = "RECORDING_AUDIO"
  * create an instance of this fragment.
  */
 class RecordFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var check: Boolean = false
     private var nbNotes: Int = 0
     private var startx: Int = 170
     private var starty: Int = 155
@@ -52,18 +52,62 @@ class RecordFragment : Fragment() {
     private lateinit var buttonListen: ImageButton
     private lateinit var buttonRecording: ImageButton
     private lateinit var audioRecordFile: String
+    private lateinit var seekBar: SeekBar
+    private lateinit var textView: TextView
+    private var tempo: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var file : InputStream
+    lateinit var values : ByteArray
+    lateinit var parts: MutableList<String>
+    lateinit var durees: MutableList<Float>
 
     override fun onDestroy() {
         super.onDestroy()
         nbNotes = 0
+    }
+
+    private fun makecomplexCall(){
+        var body : Body = Body()
+        body.value=values
+        body.sampleRate = 48000
+        body.sampleWidth = 4
+        CoroutineScope(Dispatchers.IO).launch {
+            GlobalScope.launch {
+                try {
+                    val response : Response<Note> = ApiClient.apiService.getNote(body);
+                    if (response.isSuccessful && response.body() != null) {
+                        val content = response.body()
+                        resManagement(content.toString())
+//do something
+                    } else {
+                        Log.d("error",response.body().toString())
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private fun resManagement(result: String) {
+        check = true
+        var clean = result.replace("Note(note=","")
+        clean = clean.replace(")","")
+        val temp = clean.split(" ") as MutableList<String>
+        temp.removeAt(temp.size-1)
+        val n = temp.size
+        durees = mutableListOf()
+        var cpt=0
+        Log.d("temp  ",temp.toString())
+        for(i in (n+1)/2 until n) {
+            Log.d("i ",i.toString())
+            durees.add(temp[i].toFloat())
+            cpt++
+        }
+        parts = temp.subList(0, (n + 1) / 2)
+        Log.d("result  ",parts.toString())
+        Log.d("durees " ,durees.toString())
+        check = false
     }
 
     private fun startRecording() {
@@ -107,25 +151,31 @@ class RecordFragment : Fragment() {
         buttonRecording.visibility = View.GONE
         buttonMicro.visibility = View.VISIBLE
         buttonListen.visibility = View.VISIBLE
+
+        var stor = File(activity?.applicationContext?.getFileStreamPath("audioRecord.3gp")?.path.toString())
+        file = stor.inputStream()
+        values = file.readBytes();
+        Log.d("lenght", values.size.toString())
     }
 
     fun calculatePos(note: String): Pair<Int,Int> {
         val displayMetrics = DisplayMetrics()
         activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         var width = displayMetrics.widthPixels
-        var height = displayMetrics.heightPixels
-        Log.d("width", width.toString())
-        Log.d("height", height.toString())
+        //var height = displayMetrics.heightPixels
+        //Log.d("width", width.toString())
+        //Log.d("height", height.toString())
 
         var toSub = -1
-        if (note == "Do")  toSub = -4
-        if (note == "Re")  toSub = 8
-        if (note == "Mi")  toSub = 20
-        if (note == "Fa")  toSub = 32
-        if (note == "Sol") toSub = 44
-        if (note == "La")  toSub = 57
-        if (note == "Si")  toSub = 69
-        toSub += 10
+        if (note == "do")  toSub = -4
+        else if (note == "ré")  toSub = 8
+        else if (note == "mi" || note == "me")  toSub = 20
+        else if (note == "fa" || note == "ça")  toSub = 32
+        else if (note == "sol" || note == "seule") toSub = 44
+        else if (note == "la")  toSub = 57
+        else if (note == "si" || note == "6")  toSub = 69
+        else return Pair(-1,-1)
+        toSub += 34
 
         val reste:Int = nbNotes % 13
 
@@ -133,23 +183,25 @@ class RecordFragment : Fragment() {
         if (div == 3) toSub += 3
         if (div > 3) toSub -= 2
 
-        Log.d("div", div.toString())
-        Log.d("test", yPositions[0].toString())
-
         return Pair(startx + (width / adjustImageViewToScreen(18) * reste), yPositions[div] - toSub)
     }
 
-    fun ajoutNote(layout: ConstraintLayout, note: String){
+    fun ajoutNote(note: String, couleur:String){
         if (nbNotes < 78) {
             val imageView = ImageView(activity)
-            imageView.setImageResource(R.drawable.blanchecrochetqueue)
-            imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(65), adjustImageViewToScreen(65))
+            if(couleur == "blanche") imageView.setImageResource(R.drawable.blanche)
+            if(couleur == "noire") imageView.setImageResource(R.drawable.noire)
+            if(couleur == "ronde") imageView.setImageResource(R.drawable.ronde)
+            imageView.layoutParams = ConstraintLayout.LayoutParams(adjustImageViewToScreen(100), adjustImageViewToScreen(100))
             val (x, y) = calculatePos(note)
-            Log.d("y : ", y.toString())
+            if (x == -1) return
+
+            //Log.d("y", y.toString())
+            //Log.d("x", x.toString())
             imageView.x = adjustImageViewToScreen(x).toFloat()
             imageView.y = adjustImageViewToScreen(y).toFloat()
             imageView.bringToFront()
-            layout.addView(imageView)
+            constraintLayout.addView(imageView)
             nbNotes++
         }
     }
@@ -164,6 +216,38 @@ class RecordFragment : Fragment() {
         return toAdjust * pxActualX / pxOriginX
     }
 
+    private fun setUpSeekBar(){
+        seekBar = root.findViewById<SeekBar>(R.id.seekBar)
+        textView = root.findViewById<TextView>(R.id.textView)
+        textView.text ="0 BPM"
+        seekBar.max = 240
+        seekBar.progress = 120
+        tempo = 120
+        textView.text = "120 BPM"
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if(progress==0) tempo = progress + 1
+                else tempo = progress
+                textView.text = tempo.toString() + " BPM"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+    }
+
+    private fun couleurNote(sec: Float): String{
+        var bps = tempo.toFloat()/60
+        var duree = bps*sec
+        Log.d("tempo ",tempo.toString())
+        Log.d("sec ",sec.toString())
+        Log.d("bps ", bps.toString())
+        Log.d("duree ", duree.toString())
+        if(duree <= 1) return "noire"
+        else if (duree <=3.5) return "blanche"
+        else return "ronde"
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -171,6 +255,9 @@ class RecordFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_record, container, false)
         constraintLayout = root.findViewById<ConstraintLayout>(R.id.detect)
+        setUpSeekBar()
+        parts = mutableListOf()
+        durees = mutableListOf()
 
         val partition = ImageView(activity)
         partition.setImageResource(R.drawable.partition)
@@ -191,20 +278,20 @@ class RecordFragment : Fragment() {
             val uri = Uri.fromFile(file)
             mediaPlayer = MediaPlayer.create(context, uri)
             mediaPlayer.start()
-            //ajoutNote(layout, "Do")
-            ajoutNote(constraintLayout, "Do")            
-            ajoutNote(constraintLayout, "Re")
-            ajoutNote(constraintLayout, "Mi")
-            ajoutNote(constraintLayout, "Fa")
-            ajoutNote(constraintLayout, "Sol")
-            ajoutNote(constraintLayout, "La")
-            ajoutNote(constraintLayout, "Si")
         }
 
         buttonRecording = root.findViewById<ImageButton>(R.id.buttonRecording)
         buttonRecording.visibility = View.GONE
         buttonRecording.setOnClickListener {
             stopRecording();
+            makecomplexCall();
+            Thread.sleep(4_000)
+            Log.d("parts ",parts.toString())
+            for (i in 0 until parts.size){
+                Log.d("note", parts[i])
+                ajoutNote(parts[i],couleurNote(durees[i]))
+            }
+            parts = mutableListOf()
         }
 
         // Inflate the layout for this fragment
@@ -214,20 +301,13 @@ class RecordFragment : Fragment() {
     companion object {
         /**
          * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
+         * this fragment.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment RecordFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             RecordFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
             }
     }
 }
