@@ -11,7 +11,7 @@ import retrofit2.http.POST
 
 
 object ApiClient {
-    private const val BASE_URL: String = "http://192.168.116.209:5000"
+    private const val BASE_URL: String = "http://192.168.182.96:5000"
 
     private val gson : Gson by lazy {
         GsonBuilder().setLenient().create()
