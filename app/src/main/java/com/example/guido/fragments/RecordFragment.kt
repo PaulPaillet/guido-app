@@ -220,10 +220,10 @@ class RecordFragment : Fragment() {
         seekBar = root.findViewById<SeekBar>(R.id.seekBar)
         textView = root.findViewById<TextView>(R.id.textView)
         textView.text ="0 BPM"
-        seekBar.max = 60
-        seekBar.progress = 30
-        tempo = 30
-        textView.text = "30 BPM"
+        seekBar.max = 240
+        seekBar.progress = 120
+        tempo = 120
+        textView.text = "120 BPM"
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if(progress==0) tempo = progress + 1
@@ -237,16 +237,15 @@ class RecordFragment : Fragment() {
     }
 
     private fun couleurNote(sec: Float): String{
-        var bpm = 60/tempo
-        var duree = (sec*bpm).toInt()
-        when(duree){
-            in 0..1 -> return "noire"
-            in 1..2 -> return "blanche"
-            in 2..4 -> return "ronde"
-            else -> {
-                return "ronde"
-            }
-        }
+        var bps = tempo.toFloat()/60
+        var duree = bps*sec
+        Log.d("tempo ",tempo.toString())
+        Log.d("sec ",sec.toString())
+        Log.d("bps ", bps.toString())
+        Log.d("duree ", duree.toString())
+        if(duree <= 1) return "noire"
+        else if (duree <=3.5) return "blanche"
+        else return "ronde"
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -292,6 +291,7 @@ class RecordFragment : Fragment() {
                 Log.d("note", parts[i])
                 ajoutNote(parts[i],couleurNote(durees[i]))
             }
+            parts = mutableListOf()
         }
 
         // Inflate the layout for this fragment
