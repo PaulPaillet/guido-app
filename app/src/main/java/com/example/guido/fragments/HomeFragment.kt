@@ -28,7 +28,6 @@ class HomeFragment : Fragment() {
 
     lateinit var file : InputStream
     lateinit var values : ByteArray
-    private lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +50,6 @@ class HomeFragment : Fragment() {
                     Log.d("alo",response.body().toString())
                     if (response.isSuccessful && response.body() != null) {
                         val content = response.body()
-                        button.setText(content.toString())
 //do something
                     } else {
                         Log.d("error",response.body().toString())
@@ -68,10 +66,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        button = root.findViewById<Button>(R.id.buttonTest)
-        button.setOnClickListener {
-            makecomplexCall()
-        }
         // Inflate the layout for this fragment
         return root
     }
