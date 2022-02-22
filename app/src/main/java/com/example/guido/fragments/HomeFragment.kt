@@ -21,10 +21,10 @@ import java.io.InputStream
 
 /**
  * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
+ * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : Fragment() {
+class HomeFragment : Fragment() {
 
     lateinit var file : InputStream
     lateinit var values : ByteArray
@@ -67,7 +67,7 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_settings, container, false)
+        val root = inflater.inflate(R.layout.fragment_home, container, false)
         button = root.findViewById<Button>(R.id.buttonTest)
         button.setOnClickListener {
             makecomplexCall()
@@ -85,7 +85,7 @@ class SettingsFragment : Fragment() {
          */
         @JvmStatic
         fun newInstance() =
-            SettingsFragment().apply {
+            HomeFragment().apply {
             }
     }
 }
